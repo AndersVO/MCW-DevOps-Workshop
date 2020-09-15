@@ -18,31 +18,29 @@ env:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
   build:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
-   steps:
-  # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-  - uses: actions/checkout@v2
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
 
-  - uses: azure/docker-login@v1
-    with:
-      login-server: ${{ env.containerregistry }}
-      username: ${{ env.registryusername }}
-      password: ${{ secrets.REGISTRY_PASSWORD }}
+      - uses: azure/docker-login@v1
+        with:
+          login-server: ${{ env.containerregistry }}
+          username: ${{ env.registryusername }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
 
-  - run: |
-      docker build . -t ${{ env.imagename }}:${{ github.sha }}
-      docker push ${{ env.imagename }}:${{ github.sha }}
+      - run: |
+          docker build . -t ${{ env.imagename }}:${{ github.sha }}
+          docker push ${{ env.imagename }}:${{ github.sha }}
 
-  - name: Upload arm templates to workflow
-    uses: actions/upload-artifact@v2
-    with:
-      name: armtemplate
-      path: ${{ github.workspace }}/armtemplate/ 
-
-  
+      - name: Upload arm templates to workflow
+        uses: actions/upload-artifact@v2
+        with:
+          name: armtemplate
+          path: ${{ github.workspace }}/armtemplate/
 
       
