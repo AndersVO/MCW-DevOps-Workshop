@@ -1,3 +1,11 @@
+FROM mcr.microsoft.com/dotnet/core/aspnet:3.1 AS base
+WORKDIR /app
+
+FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build
+
+# Prevent 'Warning: apt-key output should not be parsed (stdout is not a terminal)'
+ENV APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=1
+
 RUN apt-get update -yq 
 RUN apt-get install curl gnupg -yq 
 RUN curl -sL https://deb.nodesource.com/setup_14.x | bash -
