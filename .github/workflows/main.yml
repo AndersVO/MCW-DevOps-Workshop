@@ -1,0 +1,48 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the master branch
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+env:
+  resourcegroup: anders-test
+  containerregistry: ciWorkshopRegistryName.azurecr.io
+  registryusername: ciWorkshopRegistryName
+  imagename: ciWorkshopRegistryName.azurecr.io/tailspintoys/web
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+   steps:
+  # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+  - uses: actions/checkout@v2
+
+  - uses: azure/docker-login@v1
+    with:
+      login-server: ${{ env.containerregistry }}
+      username: ${{ env.registryusername }}
+      password: ${{ secrets.REGISTRY_PASSWORD }}
+
+  - run: |
+      docker build . -t ${{ env.imagename }}:${{ github.sha }}
+      docker push ${{ env.imagename }}:${{ github.sha }}
+
+  - name: Upload arm templates to workflow
+    uses: actions/upload-artifact@v2
+    with:
+      name: armtemplate
+      path: ${{ github.workspace }}/armtemplate/ 
+
+  
+
+      
